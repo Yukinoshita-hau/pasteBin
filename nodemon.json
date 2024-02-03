@@ -1,0 +1,10 @@
+{
+    "watch": [
+        "backend/src"
+    ],
+    "ext": "ts,json",
+    "ingnore": [
+        "src/**/*.spec.ts"
+    ],
+    "exec": "ts-node --files ./backend/src/main.ts"
+}
