@@ -15,10 +15,9 @@ export abstract class BaseController {
 		return this._router;
 	}
 
-	public ok(res: Response): ExpressReturnType {
+	public ok(res: Response, message: any): ExpressReturnType {
 		res.type('application/json');
-		console.log('OK');
-		res.json({ status: 'ok' });
+		res.json({ status: 'ok', message: message });
 		return res.status(200).end();
 	}
 
@@ -30,7 +29,7 @@ export abstract class BaseController {
 	protected bindRoutes(routes: IControllerRoute[]): void {
 		for (const route of routes) {
 			this.logger.log(`${route.method}: ${route.path}`);
-			const middleware = route.middlewares?.map((m) => m.exexcute.bind(m));
+			const middleware = route.middlewares?.map((m) => m.execute.bind(m));
 			const handler = route.func.bind(this);
 			const pipline = middleware ? [...middleware, handler] : handler;
 			this.router[route.method](route.path, pipline);

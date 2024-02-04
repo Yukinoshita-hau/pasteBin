@@ -1,5 +1,8 @@
-import { UserCreateDto } from '../dto/user-create';
+import { UserRegiseterDto } from '../dto/user-register';
+import { UserLoginDto } from '../dto/user-login';
 
 export interface IUserService {
-	createUser: (user: UserCreateDto) => Promise<void>;
+	createUser: (dto: UserRegiseterDto) => Promise<any | null>;
+	validateUser: (dto: UserLoginDto) => Promise<boolean>;
+	getUserInfo: (email: string) => Promise<any | null>;
 }

@@ -26,7 +26,7 @@ export class MongooseServise implements DataBaseInterface {
 			(this.client = mongoose);
 	}
 
-	async connect(): Promise<void> {
+	public async connect(): Promise<void> {
 		try {
 			await this.client.connect(this.URL);
 			this.logger.log('[mongooseServise] Connect to DB');
@@ -37,7 +37,7 @@ export class MongooseServise implements DataBaseInterface {
 		}
 	}
 
-	async disconnect(): Promise<void> {
+	public async disconnect(): Promise<void> {
 		await this.client.disconnect();
 	}
 }

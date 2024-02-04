@@ -11,7 +11,9 @@ import { IUserController } from './user-interfaces/icontroller';
 import { sign } from 'jsonwebtoken';
 import { IConfigService } from '../config/Iconfig-service';
 import { ValidatorMiddleware } from '../common/validator.middleware';
-import { UserCreateDto } from './dto/user-create';
+import { UserRegiseterDto } from './dto/user-register';
+import { UserLoginDto } from './dto/user-login';
+import { AuthGuard } from '../common/auth.guard';
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
@@ -22,29 +24,53 @@ export class UserController extends BaseController implements IUserController {
 	) {
 		super(loggerService);
 		this.bindRoutes([
-			{ path: '/login', method: 'get', func: this.login },
-			{ path: '/register', method: 'get', func: this.register },
 			{
-				path: '/create',
+				path: '/login',
 				method: 'post',
-				func: this.create,
-				middlewares: [new ValidatorMiddleware(UserCreateDto)],
+				func: this.login,
+				middlewares: [new ValidatorMiddleware(UserLoginDto)],
+			},
+			{
+				path: '/register',
+				method: 'post',
+				func: this.register,
+				middlewares: [new ValidatorMiddleware(UserRegiseterDto)],
+			},
+			{
+				path: '/info',
+				method: 'get',
+				func: this.info,
+				middlewares: [new AuthGuard()],
 			},
 		]);
 	}
 
-	login(req: Request, res: Response, next: NextFunction): void {
-		this.loggerService.log(this.configService.get('SALT'));
-		next(new httpError(500, 'Avtoriseting Error', 'login'));
+	public async login(
+		{ body }: Request<{}, {}, UserLoginDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		const result = await this.userService.validateUser(body);
+		if (result) {
+			const jwt = await this.signJWT(body.email, this.configService.get('SECRET'));
+			this.ok(res, { jwt });
+		} else {
+			return next(new httpError(500, 'Неволидные данные', 'login'));
+		}
 	}
 
-	register(req: Request, res: Response, next: NextFunction): void {
-		res.status(200).json({ data: ['data', 'ress', 'wer'] });
+	public async register({ body }: Request, res: Response, next: NextFunction): Promise<void> {
+		const result = await this.userService.createUser(body);
+		console.log(result);
+		if (!result) {
+			return next(new httpError(422, 'Пользователь уже существует'));
+		}
+		res.status(200).json({ email: result.email, id: result.id });
 	}
 
-	async create({ body }: Request, res: Response, next: NextFunction): Promise<void> {
-		this.userService.createUser(body);
-		res.status(200).send('ok').end();
+	public async info({ user }: Request, res: Response, next: NextFunction): Promise<void> {
+		const userInfo = await this.userService.getUserInfo(user);
+		this.ok(res, { name: userInfo.name, email: userInfo.email, id: userInfo.id });
 	}
 
 	private signJWT(email: string, secret: string): Promise<string> {

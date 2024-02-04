@@ -1,5 +1,8 @@
-import { UserCreateDto } from '../dto/user-create';
+import { Model } from 'mongoose';
+import { UserRegiseterDto } from '../dto/user-register';
+import { User } from '../user.entity';
 
 export interface IUserRepository {
-	create: (text_value: UserCreateDto) => Promise<void>;
+	create: (user: User) => Promise<any>;
+	find: (email: string) => Promise<any | null>;
 }

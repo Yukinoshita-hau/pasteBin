@@ -10,6 +10,7 @@ import cors from 'cors';
 import { MongooseServise } from './database/mongoose.servise';
 import { UserController } from './user/user.controller';
 import { IConfigService } from './config/Iconfig-service';
+import { AuthMiddleware } from './common/auth.middleware';
 
 @injectable()
 export class App {
@@ -35,6 +36,8 @@ export class App {
 	public useMiddware(): void {
 		this.app.use(json());
 		this.app.use(cors());
+		const authMiddleware = new AuthMiddleware(this.configService.get('SECRET'));
+		this.app.use(authMiddleware.execute.bind(authMiddleware));
 	}
 
 	public useExeptionFilter(): void {

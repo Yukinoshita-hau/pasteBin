@@ -5,7 +5,7 @@ import { validate } from 'class-validator';
 
 export class ValidatorMiddleware implements IMiddleWare {
 	constructor(private classToValidate: ClassConstructor<object>) {}
-	exexcute({ body }: Request, res: Response, next: NextFunction): void {
+	public execute({ body }: Request, res: Response, next: NextFunction): void {
 		const instance = plainToClass(this.classToValidate, body);
 		validate(instance).then((errors) => {
 			if (errors.length > 0) {
