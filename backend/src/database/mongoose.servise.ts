@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
-import { LoggerInterface } from '../logger/logger.interface';
+import { ILoggerService } from '../logger/ilogger';
 import mongoose, { Mongoose } from 'mongoose';
 import { IConfigService } from '../config/Iconfig-service';
 
@@ -10,7 +10,7 @@ export class MongooseServise implements DataBaseInterface {
 	private URL: string;
 
 	constructor(
-		@inject(TYPES.LoggerService) private logger: LoggerInterface,
+		@inject(TYPES.LoggerService) private logger: ILoggerService,
 		@inject(TYPES.ConfigService) private configService: IConfigService,
 	) {
 		(this.URL =

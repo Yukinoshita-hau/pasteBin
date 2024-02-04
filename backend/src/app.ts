@@ -1,6 +1,6 @@
 import express, { Express, Router } from 'express';
 import { Server } from 'node:http';
-import { LoggerInterface } from './logger/logger.interface';
+import { ILoggerService } from './logger/ilogger';
 import { injectable, inject } from 'inversify';
 import 'reflect-metadata';
 import { IExeptionFilter } from './common/error/exeption.filter.interface';
@@ -11,6 +11,7 @@ import { MongooseServise } from './database/mongoose.servise';
 import { UserController } from './user/user.controller';
 import { IConfigService } from './config/Iconfig-service';
 import { AuthMiddleware } from './common/auth.middleware';
+import { TextController } from './text/text.controller';
 
 @injectable()
 export class App {
@@ -20,7 +21,8 @@ export class App {
 
 	constructor(
 		@inject(TYPES.UserController) private userController: UserController,
-		@inject(TYPES.LoggerService) private logger: LoggerInterface,
+		@inject(TYPES.TextController) private TextController: TextController,
+		@inject(TYPES.LoggerService) private logger: ILoggerService,
 		@inject(TYPES.ExeptionFilterService) private exeptionFilter: IExeptionFilter,
 		@inject(TYPES.MongooseServise) private mongooseServise: MongooseServise,
 		@inject(TYPES.ConfigService) private configService: IConfigService,
@@ -29,8 +31,9 @@ export class App {
 		this.port = 8000;
 	}
 
-	public useRoutes(path: string, handlers: Router): void {
-		this.app.use(path, handlers);
+	public useRoutes(): void {
+		this.app.use('/', this.userController.router);
+		this.app.use('/text', this.TextController.router);
 	}
 
 	public useMiddware(): void {
@@ -46,7 +49,7 @@ export class App {
 
 	public async init(): Promise<void> {
 		this.useMiddware();
-		this.useRoutes('/', this.userController.router);
+		this.useRoutes();
 		this.useExeptionFilter();
 		await this.mongooseServise.connect();
 		this.server = this.app.listen(this.port);

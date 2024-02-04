@@ -4,10 +4,9 @@ import 'reflect-metadata';
 import { httpError } from '../common/error/http.error';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
-import { LoggerInterface } from '../logger/logger.interface';
-import 'reflect-metadata';
-import { IUserService } from './user-interfaces/iservice';
-import { IUserController } from './user-interfaces/icontroller';
+import { ILoggerService } from '../logger/ilogger';
+import { IUserService } from './user-interfaces/user.iservice';
+import { IUserController } from './user-interfaces/user.icontroller';
 import { sign } from 'jsonwebtoken';
 import { IConfigService } from '../config/Iconfig-service';
 import { ValidatorMiddleware } from '../common/validator.middleware';
@@ -18,7 +17,7 @@ import { AuthGuard } from '../common/auth.guard';
 @injectable()
 export class UserController extends BaseController implements IUserController {
 	constructor(
-		@inject(TYPES.LoggerService) private loggerService: LoggerInterface,
+		@inject(TYPES.LoggerService) private loggerService: ILoggerService,
 		@inject(TYPES.UserService) private userService: IUserService,
 		@inject(TYPES.ConfigService) private configService: IConfigService,
 	) {
@@ -61,11 +60,10 @@ export class UserController extends BaseController implements IUserController {
 
 	public async register({ body }: Request, res: Response, next: NextFunction): Promise<void> {
 		const result = await this.userService.createUser(body);
-		console.log(result);
 		if (!result) {
-			return next(new httpError(422, 'Пользователь уже существует'));
+			return next(new httpError(409, 'Пользователь уже существует', 'register'));
 		}
-		res.status(200).json({ email: result.email, id: result.id });
+		res.status(201).json({ email: result.email, id: result.id });
 	}
 
 	public async info({ user }: Request, res: Response, next: NextFunction): Promise<void> {

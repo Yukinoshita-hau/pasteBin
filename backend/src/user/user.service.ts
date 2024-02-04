@@ -5,8 +5,7 @@ import { UserRegiseterDto } from './dto/user-register';
 import { UserLoginDto } from './dto/user-login';
 import { User } from './user.entity';
 import { IConfigService } from '../config/Iconfig-service';
-import { IUserService } from './user-interfaces/iservice';
-import { UserSchema } from '../schemas/user/user.schema';
+import { IUserService } from './user-interfaces/user.iservice';
 
 @injectable()
 export class UserService implements IUserService {
@@ -19,7 +18,6 @@ export class UserService implements IUserService {
 		const newUser = new User(email, name);
 		const salt = this.configService.get('SALT');
 		await newUser.setPassword(password, Number(salt));
-		console.log(newUser);
 		const existendUser = await this.userRepository.find(email);
 		if (existendUser) {
 			return null;
