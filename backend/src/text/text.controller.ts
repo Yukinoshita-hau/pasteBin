@@ -1,19 +1,16 @@
 import { inject, injectable } from 'inversify';
 import { BaseController } from '../common/base.controller';
-import { UserService } from '../user/user.service';
-import { IUserService } from '../user/user-interfaces/user.iservice';
 import { IConfigService } from '../config/Iconfig-service';
 import { TYPES } from '../types';
 import { ILoggerService } from '../logger/ilogger';
 import { ITextController } from './text-interfaces/text.icontroller';
 import { Request, Response, NextFunction } from 'express';
-import { ParamsDictionary } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
 import { TextCreateDto } from './dto/create.text.dto';
 import { TextService } from './text.service';
 import { TextShowDto } from './dto/show.text.dto';
 import { ValidatorMiddleware } from '../common/validator.middleware';
 import { AuthGuard } from '../common/auth.guard';
+import { httpError } from '../common/error/http.error';
 
 @injectable()
 export class TextController extends BaseController implements ITextController {
@@ -54,6 +51,9 @@ export class TextController extends BaseController implements ITextController {
 		next: NextFunction,
 	): Promise<void> {
 		const text = await this.textService.getText(body.id);
+		if (!text) {
+			throw new httpError(400, 'Текст не найден', 'show');
+		}
 		this.ok(res, text.text);
 	}
 }

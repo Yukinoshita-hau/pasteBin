@@ -1,8 +1,7 @@
-import { Model } from 'mongoose';
-import { UserRegiseterDto } from '../dto/user-register';
 import { User } from '../user.entity';
+import { IUserSchema } from '../../schemas/user/user.ischema';
 
 export interface IUserRepository {
-	create: (user: User) => Promise<any>;
-	find: (email: string) => Promise<any | null>;
+	create: (user: User) => Promise<IUserSchema>;
+	find: (email: string) => Promise<IUserSchema | null>;
 }

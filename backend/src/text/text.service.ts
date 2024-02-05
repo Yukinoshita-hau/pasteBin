@@ -2,9 +2,9 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
 import { IConfigService } from '../config/Iconfig-service';
 import { TextCreateDto } from './dto/create.text.dto';
-import { TextSchema } from '../schemas/text/text.schema';
 import { ITextRepository } from './text-interfaces/text.irepository';
 import { ITextService } from './text-interfaces/text.iservice';
+import { ITextSchema } from '../schemas/text/text.Ischema';
 
 @injectable()
 export class TextService implements ITextService {
@@ -13,11 +13,11 @@ export class TextService implements ITextService {
 		@inject(TYPES.ConfigService) configSevice: IConfigService,
 	) {}
 
-	public async createText(req: TextCreateDto): Promise<any> {
+	public async createText(req: TextCreateDto): Promise<ITextSchema> {
 		return await this.textRepository.create(req);
 	}
 
-	public async getText(id: string): Promise<any> {
+	public async getText(id: string): Promise<ITextSchema | null> {
 		return this.textRepository.find(id);
 	}
 }

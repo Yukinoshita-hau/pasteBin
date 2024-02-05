@@ -1,6 +1,7 @@
+import { ITextSchema } from '../../schemas/text/text.Ischema';
 import { TextCreateDto } from '../dto/create.text.dto';
 
 export interface ITextRepository {
-	create: (text: TextCreateDto) => Promise<any>;
-	find: (id: string) => Promise<any | null>;
+	create: (text: TextCreateDto) => Promise<ITextSchema>;
+	find: (id: string) => Promise<ITextSchema | null>;
 }

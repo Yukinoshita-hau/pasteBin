@@ -68,6 +68,9 @@ export class UserController extends BaseController implements IUserController {
 
 	public async info({ user }: Request, res: Response, next: NextFunction): Promise<void> {
 		const userInfo = await this.userService.getUserInfo(user);
+		if (!userInfo) {
+			throw new httpError(400, 'Пользователь не найден', 'info');
+		}
 		this.ok(res, { name: userInfo.name, email: userInfo.email, id: userInfo.id });
 	}
 

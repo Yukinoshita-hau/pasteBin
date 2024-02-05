@@ -1,8 +1,13 @@
 import mongoose from 'mongoose';
+import { IUserSchema } from './user.ischema';
 
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
+const userSchema = new Schema<IUserSchema>({
+	id: {
+		type: String,
+	},
+
 	name: {
 		type: String,
 		require: true,
@@ -17,4 +22,4 @@ const userSchema = new Schema({
 	},
 });
 
-export const UserSchema = mongoose.model('user', userSchema);
+export const UserSchema = mongoose.model<IUserSchema>('user', userSchema);
